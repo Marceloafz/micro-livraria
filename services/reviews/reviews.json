@@ -1,0 +1,6 @@
+[
+    { "id": 1, "product_id": 1, "author": "Ana", "rating": 5, "comment": "Clássico para quem trabalha com código legado." },
+    { "id": 2, "product_id": 1, "author": "Bruno", "rating": 4, "comment": "Ótimos exemplos de refatoração." },
+    { "id": 3, "product_id": 2, "author": "Carla", "rating": 5, "comment": "Leitura leve e muito atual." },
+    { "id": 4, "product_id": 3, "author": "Diego", "rating": 4, "comment": "Referência obrigatória sobre padrões de projeto." }
+]

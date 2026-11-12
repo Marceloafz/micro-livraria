@@ -398,3 +398,40 @@ Se quiser estudar um segundo sistema de demonstração de microsserviços, suger
 Este exercício prático, incluindo o seu código, foi elaborado por **Rodrigo Brito**, aluno de mestrado do DCC/UFMG, como parte das suas atividades na disciplina Estágio em Docência, cursada em 2020/2, sob orientação do **Prof. Marco Tulio Valente**.
 
 O código deste repositório possui uma licença MIT. O roteiro descrito acima possui uma licença CC-BY.
+
+---
+
+## Extensão: novo microsserviço `reviews` + Docker
+
+### Arquitetura
+
+```
+Navegador ──HTTP──> frontend (:5000)
+    │
+    └──HTTP──> controller (:3000)  ── API Gateway (Express)
+                  ├─ gRPC ──> inventory (:3002)  GET  /products
+                  ├─ gRPC ──> shipping  (:3001)  GET  /shipping/:cep
+                  └─ gRPC ──> reviews   (:3003)  GET  /reviews/:productId   (NOVO)
+                                                 POST /reviews              (NOVO)
+```
+
+- Cada serviço é um processo Node independente; os contratos gRPC ficam em `proto/`.
+- O `controller` é o único ponto de entrada HTTP: converte REST em chamadas gRPC.
+- O novo `reviews` (`proto/reviews.proto`, `services/reviews/`) guarda avaliações (nota 1–5 e comentário) em memória e calcula a média por livro. O frontend mostra a média em cada card e o botão "Ver avaliações".
+
+### Executando com Docker
+
+```bash
+docker compose up --build
+# frontend: http://localhost:5000   |   API: http://localhost:3000
+```
+
+Os endereços gRPC são configurados por variáveis de ambiente (`INVENTORY_HOST`, `SHIPPING_HOST`, `REVIEWS_HOST`); sem elas, valem os padrões `127.0.0.1`, então `npm start` continua funcionando.
+
+### Testando o novo serviço
+
+```bash
+curl localhost:3000/reviews/1
+curl -X POST localhost:3000/reviews -H 'Content-Type: application/json' \
+     -d '{"product_id":2,"author":"Marcelo","rating":5,"comment":"Muito bom"}'
+```
